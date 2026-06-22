@@ -745,9 +745,14 @@ export function processUserChartData(
   const { config } = getCurrencyDisplay()
   const quotaPerUnit = config.quotaPerUnit
   const isCount = metric === 'count'
-  // 按所选指标取值；rawQuota 为内部数值字段名，两种 metric 复用。
+  const isTokens = metric === 'tokens'
+  // 按所选指标取值；rawQuota 为内部数值字段名，三种 metric 复用。
   const valueOf = (item: QuotaDataItem) =>
-    isCount ? Number(item.count) || 0 : Number(item.quota) || 0
+    isCount
+      ? Number(item.count) || 0
+      : isTokens
+        ? Number(item.token_used) || 0
+        : Number(item.quota) || 0
   const formatCount = (value: number) =>
     Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value)
   const themeUserColors = getThemeChartColors(themeKey)
@@ -759,15 +764,19 @@ export function processUserChartData(
         )
       : USER_COLOR_FALLBACKS
 
-  const formatVal = isCount
+  const formatVal = isCount || isTokens
     ? formatCount
     : (raw: number) => renderQuotaCompat(raw, 2)
   const rankTitle = isCount
     ? tt('User Call Count Ranking')
-    : tt('User Consumption Ranking')
+    : isTokens
+      ? tt('User Token Consumption Ranking')
+      : tt('User Consumption Ranking')
   const trendTitle = isCount
     ? tt('User Call Count Trend')
-    : tt('User Consumption Trend')
+    : isTokens
+      ? tt('User Token Consumption Trend')
+      : tt('User Consumption Trend')
 
   const emptyResult: ProcessedUserChartData = {
     spec_user_rank: {
@@ -824,7 +833,8 @@ export function processUserChartData(
   const rankValues = sorted.slice(0, limit).map(([username, value]) => ({
     User: username,
     rawQuota: value,
-    Usage: isCount ? value : Number((value / quotaPerUnit).toFixed(4)),
+    Usage:
+      isCount || isTokens ? value : Number((value / quotaPerUnit).toFixed(4)),
   }))
 
   const userColorMap = topUsers.reduce<Record<string, string>>(
@@ -864,7 +874,8 @@ export function processUserChartData(
         Time: time,
         User: user,
         rawQuota: q,
-        Usage: isCount ? q : Number((q / quotaPerUnit).toFixed(4)),
+        Usage:
+          isCount || isTokens ? q : Number((q / quotaPerUnit).toFixed(4)),
       })
     })
   })
