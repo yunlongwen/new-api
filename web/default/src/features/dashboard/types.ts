@@ -251,8 +251,8 @@ export interface ProcessedUserChartData {
   spec_user_trend: VChartSpec
 }
 
-// 用户统计排行所用指标：费用消耗（quota）或调用次数（count）
-export type UserRankMetric = 'quota' | 'count'
+// 用户统计排行所用指标：费用消耗（quota）、调用次数（count）或 Token 消耗（tokens）
+export type UserRankMetric = 'quota' | 'count' | 'tokens'
 
 // ============================================================================
 // Announcement Types

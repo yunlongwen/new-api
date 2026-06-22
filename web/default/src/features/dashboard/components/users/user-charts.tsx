@@ -85,7 +85,7 @@ export function UserCharts(props: UserChartsProps) {
   const topUserLimit = props.filters.topUserLimit
   const onFiltersChange = props.onFiltersChange
 
-  const [metric, setMetric] = useState<UserRankMetric>('quota')
+  const [metric, setMetric] = useState<UserRankMetric>('tokens')
 
   const timeRange = useMemo(() => {
     const { start, end } = getRollingDateRange(selectedRange)
@@ -224,11 +224,14 @@ export function UserCharts(props: UserChartsProps) {
           className='shrink-0'
         >
           <TabsList>
-            <TabsTrigger value='quota' className='px-2.5 text-xs'>
-              {t('Cost Consumption')}
+            <TabsTrigger value='tokens' className='px-2.5 text-xs'>
+              {t('Token Consumption')}
             </TabsTrigger>
             <TabsTrigger value='count' className='px-2.5 text-xs'>
               {t('Call Count')}
+            </TabsTrigger>
+            <TabsTrigger value='quota' className='px-2.5 text-xs'>
+              {t('Cost Consumption')}
             </TabsTrigger>
           </TabsList>
         </Tabs>
