@@ -20,8 +20,8 @@ import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useSystemConfig } from '@/hooks/use-system-config'
-import { Button } from '@/components/ui/button'
 import { AnimateInView } from '@/components/animate-in-view'
+import { Button } from '@/components/ui/button'
 
 interface CTAProps {
   className?: string

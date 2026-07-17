@@ -12,3 +12,4 @@
 - 界面语言：仅中文（移除多语言切换与多语言资源）
 - 品牌图标：替换为 Agently 图标（`logo.png` + `favicon.ico` + `logo.svg` 源，蓝→紫渐变 + 字母 A + 火花，180×180）
 - CI：新增 Docker 镜像发布 workflow（`.github/workflows/docker-publish.yml`，手动触发，amd64+arm64 多架构推送到 Docker Hub `yunlong1989/new-api`）
+- 上游同步（2026-07-18）：合并 `QuantumNous/new-api` main 分支 169 个提交（自 2026-06-22 上次同步起，含 i18n key、定价说明、dashboard 与重试文案等更新），保留中文-only / 页脚居中 / 主页改版 / 定价编辑 / 动态系统名等全部本地定制
