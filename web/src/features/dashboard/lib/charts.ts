@@ -23,6 +23,7 @@ import type {
   QuotaDataItem,
   ProcessedChartData,
   ProcessedUserChartData,
+  UserRankMetric,
 } from '@/features/dashboard/types'
 import { getCurrencyDisplay } from '@/lib/currency'
 import { formatChartTime, type TimeGranularity } from '@/lib/time'
@@ -705,13 +706,38 @@ export function processUserChartData(
   data: QuotaDataItem[],
   timeGranularity: TimeGranularity = 'day',
   t?: TFunction,
-  limit = 10
+  limit = 10,
+  metric: UserRankMetric = 'tokens'
 ): ProcessedUserChartData {
   const tt: TFunction = t ?? ((x) => x)
   const { config } = getCurrencyDisplay()
   const quotaPerUnit = config.quotaPerUnit
+  const isCount = metric === 'count'
+  const isTokens = metric === 'tokens'
+  // 按所选指标取值；rawQuota 为内部数值字段名，三种 metric 复用。
+  const valueOf = (item: QuotaDataItem) =>
+    isCount
+      ? Number(item.count) || 0
+      : isTokens
+        ? Number(item.token_used) || 0
+        : Number(item.quota) || 0
+  const formatCount = (value: number) =>
+    Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value)
+  const userColorRange = USER_COLORS
 
-  const formatVal = (raw: number) => renderQuotaCompat(raw, 2)
+  const formatVal = isCount || isTokens
+    ? formatCount
+    : (raw: number) => renderQuotaCompat(raw, 2)
+  const rankTitle = isCount
+    ? tt('User Call Count Ranking')
+    : isTokens
+      ? tt('User Token Consumption Ranking')
+      : tt('User Consumption Ranking')
+  const trendTitle = isCount
+    ? tt('User Call Count Trend')
+    : isTokens
+      ? tt('User Token Consumption Trend')
+      : tt('User Consumption Trend')
 
   const emptyResult: ProcessedUserChartData = {
     spec_user_rank: {
@@ -723,7 +749,7 @@ export function processUserChartData(
       direction: 'horizontal',
       title: {
         visible: true,
-        text: tt('User Consumption Ranking'),
+        text: rankTitle,
         subtext: tt('No data available'),
       },
       legends: { visible: false },
@@ -738,7 +764,7 @@ export function processUserChartData(
       seriesField: 'User',
       title: {
         visible: true,
-        text: tt('User Consumption Trend'),
+        text: trendTitle,
         subtext: tt('No data available'),
       },
       legends: { visible: true, selectMode: 'single' },
@@ -750,11 +776,12 @@ export function processUserChartData(
 
   if (!data || data.length === 0) return emptyResult
 
+  // userQuotaTotal 保存「按当前指标」每用户的求和（quota 或 count），名称沿用以减小 diff。
   const userQuotaTotal = new Map<string, number>()
   data.forEach((item) => {
     const username = item.username || 'unknown'
     const prev = userQuotaTotal.get(username) || 0
-    userQuotaTotal.set(username, prev + (Number(item.quota) || 0))
+    userQuotaTotal.set(username, prev + valueOf(item))
   })
 
   const sorted = Array.from(userQuotaTotal.entries()).sort(
@@ -764,10 +791,11 @@ export function processUserChartData(
   const topUserSet = new Set(topUsers)
   const totalQuota = sorted.slice(0, limit).reduce((s, [, q]) => s + q, 0)
 
-  const rankValues = sorted.slice(0, limit).map(([username, quota]) => ({
+  const rankValues = sorted.slice(0, limit).map(([username, value]) => ({
     User: username,
-    rawQuota: quota,
-    Usage: Number((quota / quotaPerUnit).toFixed(4)),
+    rawQuota: value,
+    Usage:
+      isCount || isTokens ? value : Number((value / quotaPerUnit).toFixed(4)),
   }))
 
   const userColorMap = topUsers.reduce<Record<string, string>>(
@@ -789,7 +817,7 @@ export function processUserChartData(
     if (!topUserSet.has(user)) return
     if (!timeUserMap.has(timeKey)) timeUserMap.set(timeKey, new Map())
     const map = timeUserMap.get(timeKey)!
-    map.set(user, (map.get(user) || 0) + (Number(item.quota) || 0))
+    map.set(user, (map.get(user) || 0) + valueOf(item))
   })
 
   const sortedTimePoints = Array.from(allTimePoints).sort()
@@ -807,7 +835,8 @@ export function processUserChartData(
         Time: time,
         User: user,
         rawQuota: q,
-        Usage: Number((q / quotaPerUnit).toFixed(4)),
+        Usage:
+          isCount || isTokens ? q : Number((q / quotaPerUnit).toFixed(4)),
       })
     })
   })
@@ -822,7 +851,7 @@ export function processUserChartData(
       direction: 'horizontal',
       title: {
         visible: true,
-        text: tt('User Consumption Ranking'),
+        text: rankTitle,
         subtext: `${tt('Total:')} ${formatVal(totalQuota)}`,
       },
       legends: { visible: false },
@@ -878,7 +907,7 @@ export function processUserChartData(
       stack: false,
       title: {
         visible: true,
-        text: tt('User Consumption Trend'),
+        text: trendTitle,
         subtext: `${tt('Total:')} ${formatVal(totalQuota)}`,
       },
       legends: { visible: true, selectMode: 'single' },

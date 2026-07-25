@@ -42,6 +42,7 @@ type textQuotaSummary struct {
 	PromptTokens           int
 	CompletionTokens       int
 	TotalTokens            int
+	RawTotalTokens         int
 	CacheTokens            int
 	CacheCreationTokens    int
 	CacheCreationTokens5m  int
@@ -264,6 +265,15 @@ func calculateTextQuotaSummary(ctx *gin.Context, relayInfo *relaycommon.RelayInf
 	summary.CacheCreationTokens1h = usage.ClaudeCacheCreation1hTokens
 	summary.ImageTokens = usage.PromptTokensDetails.ImageTokens
 	summary.AudioTokens = usage.PromptTokensDetails.AudioTokens
+	// RawTotalTokens counts every token that flowed through the model without pricing ratios.
+	// Claude/Anthropic semantics report input_tokens WITHOUT cache tokens (cache_read and
+	// cache_creation are separate fields), so they must be added back. OpenAI semantics
+	// already include cached tokens inside prompt_tokens, so TotalTokens is already complete.
+	if summary.IsClaudeUsageSemantic {
+		summary.RawTotalTokens = summary.PromptTokens + summary.CacheTokens + summary.CacheCreationTokens + summary.CompletionTokens
+	} else {
+		summary.RawTotalTokens = summary.TotalTokens
+	}
 	legacyClaudeDerived := isLegacyClaudeDerivedOpenAIUsage(relayInfo, usage)
 	isOpenRouterClaudeBilling := relayInfo.ChannelMeta != nil &&
 		relayInfo.ChannelType == constant.ChannelTypeOpenRouter &&
@@ -457,6 +467,7 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 	} else {
 		model.UpdateUserUsedQuotaAndRequestCount(relayInfo.UserId, summary.Quota)
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, summary.Quota)
+		model.UpdateUserUsedTokens(relayInfo.UserId, summary.RawTotalTokens)
 	}
 
 	if err := SettleBilling(ctx, relayInfo, summary.Quota); err != nil {
@@ -539,6 +550,7 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		ChannelId:        relayInfo.ChannelId,
 		PromptTokens:     summary.PromptTokens,
 		CompletionTokens: summary.CompletionTokens,
+		TotalTokens:      summary.RawTotalTokens,
 		ModelName:        logModel,
 		TokenName:        summary.TokenName,
 		Quota:            summary.Quota,
