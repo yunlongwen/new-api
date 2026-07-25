@@ -39,6 +39,7 @@ import {
 import type {
   ProcessedUserChartData,
   UserChartsFilters,
+  UserRankMetric,
 } from '@/features/dashboard/types'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
@@ -86,6 +87,8 @@ export function UserCharts(props: UserChartsProps) {
   const selectedRange = props.filters.selectedRange
   const topUserLimit = props.filters.topUserLimit
   const onFiltersChange = props.onFiltersChange
+
+  const [metric, setMetric] = useState<UserRankMetric>('tokens')
 
   const timeRange = useMemo(() => {
     const { start, end } = getRollingDateRange(selectedRange)
@@ -151,9 +154,10 @@ export function UserCharts(props: UserChartsProps) {
         isLoading ? [] : (userData ?? []),
         timeGranularity,
         t,
-        topUserLimit
+        topUserLimit,
+        metric
       ),
-    [userData, isLoading, timeGranularity, t, topUserLimit]
+    [userData, isLoading, timeGranularity, t, topUserLimit, metric]
   )
 
   return (
@@ -218,6 +222,24 @@ export function UserCharts(props: UserChartsProps) {
           </TabsList>
         </Tabs>
 
+        <Tabs
+          value={metric}
+          onValueChange={(value) => setMetric(value as UserRankMetric)}
+          className='shrink-0'
+        >
+          <TabsList>
+            <TabsTrigger value='tokens' className='px-2.5 text-xs'>
+              {t('Token Consumption')}
+            </TabsTrigger>
+            <TabsTrigger value='count' className='px-2.5 text-xs'>
+              {t('Call Count')}
+            </TabsTrigger>
+            <TabsTrigger value='quota' className='px-2.5 text-xs'>
+              {t('Cost Consumption')}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {isLoading && (
           <Loader2 className='text-muted-foreground size-4 animate-spin' />
         )}
@@ -246,7 +268,7 @@ export function UserCharts(props: UserChartsProps) {
                   themeReady &&
                   spec && (
                     <VChart
-                      key={`user-${chart.value}-${topUserLimit}-${resolvedTheme}`}
+                      key={`user-${chart.value}-${topUserLimit}-${metric}-${resolvedTheme}`}
                       spec={{
                         ...spec,
                         theme: resolvedTheme === 'dark' ? 'dark' : 'light',

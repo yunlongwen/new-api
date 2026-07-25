@@ -25,8 +25,12 @@ import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 type UserQuotaCellProps = {
-  remaining: number
   used: number
+  remaining: number
+}
+
+function formatTokens(tokens: number): string {
+  return tokens.toLocaleString()
 }
 
 export function UserQuotaCell(props: UserQuotaCellProps) {
@@ -36,10 +40,8 @@ export function UserQuotaCell(props: UserQuotaCellProps) {
   const { meta: currency } = getCurrencyDisplay()
   const quotaUnit = currency.kind === 'tokens' ? t('Tokens') : currency.symbol
   const hasQuota = props.remaining !== 0 || props.used !== 0
+  const formattedUsed = formatTokens(props.used)
   const formattedRemaining = formatQuotaWithCurrency(props.remaining, {
-    showSymbol: false,
-  })
-  const formattedUsed = formatQuotaWithCurrency(props.used, {
     showSymbol: false,
   })
 
@@ -64,14 +66,14 @@ export function UserQuotaCell(props: UserQuotaCellProps) {
               props.remaining === 0 && 'text-muted-foreground'
             )}
           >
-            {formattedRemaining}
+            {formattedUsed}
           </span>
           <span
             data-table-text='secondary'
             className='text-muted-foreground flex items-baseline gap-1 text-xs font-normal'
           >
-            <span>{t('Used amount')}</span>
-            <span>{formattedUsed}</span>
+            <span>{t('Remaining:')}</span>
+            <span>{formattedRemaining}</span>
           </span>
         </span>
       ) : (
