@@ -224,6 +224,7 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 	} else {
 		model.UpdateUserUsedQuotaAndRequestCount(relayInfo.UserId, quota)
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, quota)
+		model.UpdateUserUsedTokens(relayInfo.UserId, totalTokens)
 	}
 
 	if err := SettleBilling(ctx, relayInfo, quota); err != nil {
@@ -357,6 +358,7 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 	} else {
 		model.UpdateUserUsedQuotaAndRequestCount(relayInfo.UserId, quota)
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, quota)
+		model.UpdateUserUsedTokens(relayInfo.UserId, totalTokens)
 	}
 
 	if err := SettleBilling(ctx, relayInfo, quota); err != nil {

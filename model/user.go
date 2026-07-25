@@ -96,7 +96,8 @@ type User struct {
 	AccessTokenCreatedAt *int64                     `json:"-" gorm:"type:bigint;column:access_token_created_at"`    // Deprecated: 旧版面板访问令牌，仅在升级后的过渡期内使用；删除 users.access_token 列时一并移除。
 	Quota                int                        `json:"quota" gorm:"type:int;default:0"`
 	UsedQuota            int                        `json:"used_quota" gorm:"type:int;default:0;column:used_quota"` // used quota
-	RequestCount         int                        `json:"request_count" gorm:"type:int;default:0;"`               // request number
+	UsedTokens           int                        `json:"used_tokens" gorm:"type:int;default:0;column:used_tokens"`
+	RequestCount         int                        `json:"request_count" gorm:"type:int;default:0;"` // request number
 	Group                string                     `json:"group" gorm:"type:varchar(64);default:'default'"`
 	AffCode              string                     `json:"aff_code" gorm:"type:varchar(32);column:aff_code;uniqueIndex"`
 	AffCount             int                        `json:"aff_count" gorm:"type:int;default:0;column:aff_count"`
@@ -836,6 +837,7 @@ func (user *User) UpdateWithTx(tx *gorm.DB, updatePassword bool) error {
 		"access_token",
 		"quota",
 		"used_quota",
+		"used_tokens",
 		"request_count",
 		"aff_count",
 		"aff_quota",
@@ -1474,8 +1476,25 @@ func updateUserUsedQuotaAndRequestCount(id int, quota int, count int) {
 	//}
 }
 
-func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, requestCount int) {
-	if quota == 0 && usedQuota == 0 && requestCount == 0 {
+func UpdateUserUsedTokens(id int, tokens int) {
+	if common.BatchUpdateEnabled {
+		addNewRecord(BatchUpdateTypeUsedTokens, id, tokens)
+		return
+	}
+	updateUserUsedTokens(id, tokens)
+}
+
+func updateUserUsedTokens(id int, tokens int) {
+	err := DB.Model(&User{}).Where("id = ?", id).Update(
+		"used_tokens", gorm.Expr("used_tokens + ?", tokens),
+	).Error
+	if err != nil {
+		common.SysLog("failed to update user used tokens: " + err.Error())
+	}
+}
+
+func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, requestCount int, usedTokens int) {
+	if quota == 0 && usedQuota == 0 && requestCount == 0 && usedTokens == 0 {
 		return
 	}
 
@@ -1484,6 +1503,7 @@ func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, r
 			"quota":         gorm.Expr("quota + ?", quota),
 			"used_quota":    gorm.Expr("used_quota + ?", usedQuota),
 			"request_count": gorm.Expr("request_count + ?", requestCount),
+			"used_tokens":   gorm.Expr("used_tokens + ?", usedTokens),
 		},
 	).Error
 	if err != nil {
