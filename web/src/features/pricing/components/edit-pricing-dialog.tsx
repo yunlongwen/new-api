@@ -61,7 +61,7 @@ export function EditPricingDialog({
         const mr = readMap(arr, 'ModelRatio')
         const cr = readMap(arr, 'CompletionRatio')
         const mp = readMap(arr, 'ModelPrice')
-        const hasPrice = mp[modelName] !== undefined && mp[modelName] !== ''
+        const hasPrice = mp[modelName] !== undefined
         setMode(hasPrice ? 'per-request' : 'per-token')
         setRatio(mr[modelName] != null ? String(mr[modelName]) : '')
         setCompletionRatio(cr[modelName] != null ? String(cr[modelName]) : '')
