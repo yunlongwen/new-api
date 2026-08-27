@@ -723,7 +723,6 @@ export function processUserChartData(
         : Number(item.quota) || 0
   const formatCount = (value: number) =>
     Intl.NumberFormat(undefined, { maximumFractionDigits: 0 }).format(value)
-  const userColorRange = USER_COLORS
 
   const formatVal = isCount || isTokens
     ? formatCount
