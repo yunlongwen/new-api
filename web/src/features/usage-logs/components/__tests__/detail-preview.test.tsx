@@ -27,7 +27,6 @@ import { createInstance } from 'i18next'
 import { I18nextProvider } from 'react-i18next'
 import { afterAll, afterEach, beforeEach, expect, test, vi } from 'vitest'
 
-import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 import {
   DEFAULT_CURRENCY_CONFIG,
@@ -103,7 +102,7 @@ const i18n = createInstance()
 beforeEach(async () => {
   await i18n.init({
     lng: 'en',
-    resources: { en },
+    resources: { zh },
     interpolation: { escapeValue: false },
   })
   useSystemConfigStore

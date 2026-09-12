@@ -22,7 +22,6 @@ import { createInstance } from 'i18next'
 import { I18nextProvider } from 'react-i18next'
 import { expect, test, vi } from 'vitest'
 
-import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 
 import { ModelMappingEditor } from '../model-mapping-editor'
@@ -49,7 +48,7 @@ test('language changes preserve draft mappings and explain the same direction in
   await i18n.init({
     lng: 'en',
     fallbackLng: 'en',
-    resources: { en, zh },
+    resources: { zh },
     keySeparator: false,
     interpolation: { escapeValue: false },
   })
