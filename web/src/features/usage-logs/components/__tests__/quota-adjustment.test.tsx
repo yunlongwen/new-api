@@ -35,7 +35,6 @@ import {
   vi,
 } from 'vitest'
 
-import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 import {
   DEFAULT_CURRENCY_CONFIG,
@@ -153,7 +152,7 @@ describe('quota adjustment log localization', () => {
       await i18n.init({
         lng: 'en',
         fallbackLng: 'en',
-        resources: { en, zh },
+        resources: { zh },
         interpolation: { escapeValue: false },
       })
       const log: UsageLog = {
@@ -211,7 +210,7 @@ describe('quota adjustment log localization', () => {
 
   test('preserves legacy formatted quota parameters and unknown-action fallback', async () => {
     const i18n = createInstance()
-    await i18n.init({ lng: 'en', resources: { en } })
+    await i18n.init({ lng: 'en', resources: { zh } })
     const other: LogOtherData = {
       op: {
         action: 'user.quota_add',
