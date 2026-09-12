@@ -19,7 +19,7 @@ For commercial licensing, please contact support@quantumnous.com
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-
+import { useSystemConfig } from '@/hooks/use-system-config'
 import { AnimateInView } from '@/components/animate-in-view'
 import { Button } from '@/components/ui/button'
 
@@ -30,6 +30,7 @@ interface CTAProps {
 
 export function CTA(props: CTAProps) {
   const { t } = useTranslation()
+  const { systemName } = useSystemConfig()
 
   if (props.isAuthenticated) {
     return null
@@ -54,15 +55,16 @@ export function CTA(props: CTAProps) {
         animation='scale-in'
       >
         <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-4xl'>
-          {t('Ready to simplify')}
+          {t('Ready to start?')}
           <br />
           <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
-            {t('your AI integration?')}
+            {t('Claim your 20 CNY credit')}
           </span>
         </h2>
         <p className='text-muted-foreground/80 mx-auto mt-5 max-w-md text-sm leading-relaxed md:text-base'>
           {t(
-            'Deploy your own gateway and start routing requests through your configured upstream services.'
+            'Sign up for {{name}}, get your key, and start calling GLM, DeepSeek and more in minutes.',
+            { name: systemName }
           )}
         </p>
         <div className='mt-8 flex items-center justify-center gap-3'>
