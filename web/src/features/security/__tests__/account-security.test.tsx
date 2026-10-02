@@ -30,7 +30,6 @@ import { createInstance } from 'i18next'
 import { I18nextProvider, initReactI18next } from 'react-i18next'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 
-import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 import { api } from '@/lib/api'
 import { STATUS_QUERY_KEY } from '@/lib/status-query'
@@ -762,7 +761,7 @@ it('translates the delete confirmation as a sentence and preserves the literal u
     lng: 'zh',
     fallbackLng: false,
     nsSeparator: false,
-    resources: { en, zh },
+    resources: { zh },
     interpolation: { escapeValue: false },
   })
   const username = 'admin <b>name</b>'
@@ -787,7 +786,7 @@ it('shows complete translated 2FA step descriptions and updates every step on la
     lng: 'zh',
     fallbackLng: false,
     nsSeparator: false,
-    resources: { en, zh },
+    resources: { zh },
     interpolation: { escapeValue: false },
   })
   const user = userEvent.setup()
