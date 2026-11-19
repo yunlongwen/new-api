@@ -1,4 +1,4 @@
-FROM oven/bun:1.4.4@sha256:1d22548f177f4ff38e0c15baa3c2c46c6c2060ba2d1bc573bb4720b407548f1d AS builder
+FROM docker.1ms.run/oven/bun:1.4.4 AS builder
 
 WORKDIR /build/web
 COPY web/package.json web/bun.lock ./
@@ -7,11 +7,13 @@ COPY ./web ./
 COPY ./VERSION /build/VERSION
 RUN DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$(cat /build/VERSION) bun run build
 
-FROM golang:1.26.10-alpine@sha256:9ce231b28998b32e116927c61aa5c406183061d4f3f2d61b292c88e7f6bdf7ca AS builder2
+FROM docker.1ms.run/library/golang:1.26.10-alpine AS builder2
 ENV GO111MODULE=on CGO_ENABLED=0 GOWORK=off
 # Use a CN-accessible Go module proxy; proxy.golang.org is unreachable from
 # this build host (CN), which previously stalled `go mod download`.
 ENV GOPROXY=https://goproxy.cn,direct
+# Base images come from a CN mirror registry; the configured docker.io
+# registry mirror rejects digest-pinned HEAD requests (401).
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -31,7 +33,7 @@ COPY . .
 COPY --from=builder /build/web/dist ./web/dist
 RUN go build -pgo="$(go list -m -f '{{.Dir}}' github.com/MoeForge/moejs)/default.pgo" -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o new-api
 
-FROM debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a
+FROM docker.1ms.run/library/debian:bookworm-slim
 
 # Use CN-accessible Debian mirrors; deb.debian.org is slow/unreachable from this host.
 RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g; s|security.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources \
