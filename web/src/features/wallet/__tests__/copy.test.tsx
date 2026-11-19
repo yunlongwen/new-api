@@ -22,7 +22,6 @@ import { I18nextProvider, initReactI18next } from 'react-i18next'
 import { beforeEach, expect, it, vi } from 'vitest'
 
 import { BillingHistoryDialog } from '@/features/wallet/components/dialogs/billing-history-dialog'
-import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 import { api } from '@/lib/api'
 
@@ -35,7 +34,7 @@ beforeEach(async () => {
     lng: 'zh',
     fallbackLng: false,
     nsSeparator: false,
-    resources: { en, zh },
+    resources: { zh },
     interpolation: { escapeValue: false },
   })
 })

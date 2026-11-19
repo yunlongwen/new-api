@@ -326,6 +326,7 @@ type RecordConsumeLogParams struct {
 	ChannelId        int               `json:"channel_id"`
 	PromptTokens     int               `json:"prompt_tokens"`
 	CompletionTokens int               `json:"completion_tokens"`
+	TotalTokens      int               `json:"total_tokens"`
 	ModelName        string            `json:"model_name"`
 	TokenName        string            `json:"token_name"`
 	Quota            int               `json:"quota"`
@@ -397,13 +398,21 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 			// Do not add the 5m/1h breakdown again or infer tokens from prices.
 			cacheCreationTokens, _ = other.public["cache_write_tokens"].(int)
 		}
+		// TokenUsed tracks the raw token count for statistics/rankings. For
+		// Claude/Anthropic semantics the upstream input_tokens excludes cache
+		// hits/writes, so the caller passes TotalTokens (which already includes
+		// them) when available; otherwise fall back to prompt + completion.
+		tokenUsed := params.TotalTokens
+		if tokenUsed == 0 {
+			tokenUsed = params.PromptTokens + params.CompletionTokens
+		}
 		LogQuotaData(QuotaDataLogParams{
 			UserID:              userId,
 			Username:            username,
 			ModelName:           params.ModelName,
 			Quota:               params.Quota,
 			CreatedAt:           createdAt,
-			TokenUsed:           params.PromptTokens + params.CompletionTokens,
+			TokenUsed:           tokenUsed,
 			CacheReadTokens:     int64(cacheReadTokens),
 			CacheCreationTokens: int64(cacheCreationTokens),
 			UseGroup:            params.Group,

@@ -38,6 +38,7 @@ const target: User = {
   status: 1,
   quota: 0,
   used_quota: 0,
+  used_tokens: 0,
   request_count: 0,
   group: 'default',
 }

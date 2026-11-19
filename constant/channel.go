@@ -233,6 +233,16 @@ var ChannelSpecialBases = map[string]ChannelSpecialBase{
 		ClaudeBaseURL: "https://ark.cn-beijing.volces.com/api/coding",
 		OpenAIBaseURL: "https://ark.cn-beijing.volces.com/api/coding/v3",
 	},
+	// 官方 OpenAI 兼容 Base URL 也直接注册为特殊通道 key，
+	// 这样用户按官方文档填 Base URL 即可触发 coding plan 特殊路由（且不会走到 /api/v3 产生额外费用）。
+	"https://ark.cn-beijing.volces.com/api/coding/v3": {
+		ClaudeBaseURL: "https://ark.cn-beijing.volces.com/api/coding",
+		OpenAIBaseURL: "https://ark.cn-beijing.volces.com/api/coding/v3",
+	},
+	"https://ark.cn-beijing.volces.com/api/coding": {
+		ClaudeBaseURL: "https://ark.cn-beijing.volces.com/api/coding",
+		OpenAIBaseURL: "https://ark.cn-beijing.volces.com/api/coding/v3",
+	},
 }
 
 // IsAdvancedCustomChannel includes named channels backed by route presets.
