@@ -264,6 +264,6 @@ test('long translated source labels wrap inside their row without covering the m
     expect(tab).toHaveClass('whitespace-normal', 'h-auto')
   }
   expect(
-    screen.getByRole('textbox', { name: 'Rechercher des modèles...' })
+    screen.getByRole('textbox', { name: '搜索模型...' })
   ).toBeVisible()
 })

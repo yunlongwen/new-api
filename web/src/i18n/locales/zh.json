@@ -7087,7 +7087,7 @@
         "Use this token for API authentication": "使用此令牌进行 API 身份验证",
         "Use tier(name, fixed(amount)) for a USD price per request. Group and request multipliers still apply.": "使用 tier(name, fixed(amount)) 设置以美元计价的每次请求价格。分组倍率和请求倍率仍然生效。",
         "Use your Passkey": "使用您的通行密钥",
-        "Used": "已使用",
+        "Used": "已用",
         "Used / Remaining": "已使用 / 剩余",
         "Used Quota": "消耗额度",
         "Used amount": "已用",

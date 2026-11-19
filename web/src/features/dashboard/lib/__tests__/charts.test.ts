@@ -83,6 +83,7 @@ function unorderedUsage(start: string, interval: number): QuotaDataItem[] {
     model_name: 'model-a',
     username: 'alice',
     quota: (i + 1) * 500000,
+    token_used: (i + 1) * 500000,
     count: i + 1,
   }))
   // Same hour, or a second hourly record within the same day/week label.
@@ -90,6 +91,7 @@ function unorderedUsage(start: string, interval: number): QuotaDataItem[] {
     ...rows[0],
     created_at: first + (interval === 3600 ? 0 : 3600),
     quota: 5000000,
+    token_used: 5000000,
     count: 10,
   }
   return [

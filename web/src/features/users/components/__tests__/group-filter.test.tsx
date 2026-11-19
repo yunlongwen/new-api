@@ -70,6 +70,7 @@ async function renderUsers(initialEntry = '/users/') {
               status: 1,
               quota: 0,
               used_quota: 0,
+              used_tokens: 0,
               request_count: 0,
               group: 'premium',
             },
