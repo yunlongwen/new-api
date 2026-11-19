@@ -15,3 +15,4 @@
 - 上游同步（2026-07-18）：合并 `QuantumNous/new-api` main 分支 169 个提交（自 2026-06-22 上次同步起，含 i18n key、定价说明、dashboard 与重试文案等更新），保留中文-only / 页脚居中 / 主页改版 / 定价编辑 / 动态系统名等全部本地定制
 - 上游同步（2026-08-16）：`feat/raw-token-counting` rebase 到 origin/main 最新 42 个提交（e2c7aa7b，含 Vitest 测试标准化、OAuth 自定义绑定、Claude 空 tools 修复等），本地定制全部保留，重新编译并覆盖部署 :3001（数据保留）
 - 上游同步（2026-09-12）：`feat/raw-token-counting` rebase 到 origin/main 最新 72 个提交（043ff99a，含安全加固、模型定价表达式、dashboard/渠道重构等更新），本地定制全部保留；适配上游新增测试到中文-only（仅 zh locale），重新编译并覆盖部署 :3001（数据保留）
+- 上游同步（2026-11-19）：`feat/raw-token-counting` rebase 到 origin/main 最新 239 个提交（3a407cc9b，含 relaykit/tokenkit 结构调整、认证收紧、Gemini/GPT-6 relay 修复等），本地定制全部保留；新增 volcengine coding-plan Base URL 路由与 CN 构建镜像源补丁入库；适配上游新增测试到中文-only 与原始 Token UI（charts fixture 补 token_used、quota-display 按 fork 布局改写、i18n 测试实例补 nsSeparator:false）；typecheck + vitest 235 文件 2884 用例全绿后重新构建镜像 rebase-20261119 并覆盖部署 :3001（数据保留）
